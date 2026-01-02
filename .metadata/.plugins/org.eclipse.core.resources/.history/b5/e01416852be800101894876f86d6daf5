@@ -31,6 +31,7 @@ public class Taquilla implements Runnable{
 
 	@Override
 	public void run() {
+		this.tiempoInicioVenta = System.currentTimeMillis();
         try {
             while (!Thread.currentThread().isInterrupted()) {
             	if (libroDeReservas.size() >= capacidadSala) {

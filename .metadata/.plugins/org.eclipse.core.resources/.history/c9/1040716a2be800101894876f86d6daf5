@@ -2,10 +2,10 @@ package com.leyreromero.psp.cine_simulacion_concurrente;
 
 public class Proyeccion {
 
-	private final int id;
-    private final Sala sala;
-    private final Pelicula pelicula;
-    private final long horaInicio;
+	private int id;
+    private Sala sala;
+    private Pelicula pelicula;
+    private long horaInicio;
 
     public Proyeccion(int id, Sala sala, Pelicula pelicula, long hora) {
         this.id = id;

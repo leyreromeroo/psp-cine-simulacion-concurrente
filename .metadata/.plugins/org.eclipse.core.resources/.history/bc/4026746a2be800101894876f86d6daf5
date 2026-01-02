@@ -5,12 +5,12 @@ import java.util.Date;
 
 public class Reserva {
 
-	private final int id;
-	private final Cliente cliente;
-	private final Proyeccion proyeccion;
-	private final int numeroAsiento;
-	private final double precioFinal;
-	private final long timestamp;
+	private int id;
+	private Cliente cliente;
+	private Proyeccion proyeccion;
+	private int numeroAsiento;
+	private double precioFinal;
+	private long timestamp;
 
 	public Reserva(int id, Cliente cliente, Proyeccion proyeccion, int numeroAsiento) {
 		this.id = id;

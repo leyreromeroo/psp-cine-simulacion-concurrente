@@ -5,14 +5,15 @@ import java.util.concurrent.BlockingQueue;
 
 public class Taquilla implements Runnable{
 	
-	private static final boolean debug = true;
-    private final int id;
-    private final List<BlockingQueue<Cliente>> colas;
-    private final Proyeccion proyeccion;
-    private final long tiempoMinVenta;
-    private final long tiempoMaxVenta;
+	private static boolean debug = true;
+	private int id;
+    private List<BlockingQueue<Cliente>> colas;
+    private Proyeccion proyeccion;
+    private long tiempoInicioVenta;
+    private long tiempoMinVenta = 0;
+    private long tiempoMaxVenta = 0;
     private final int capacidadSala;
-    private final List<Reserva> libroDeReservas;
+    private List<Reserva> libroDeReservas;
 
     public Taquilla(int id, List<BlockingQueue<Cliente>> colas, Proyeccion p, List<Reserva> libroDeReservas , long tiempoMinVenta,  long tiempoMaxVenta, 
             int capacidadSala) {
@@ -31,6 +32,7 @@ public class Taquilla implements Runnable{
 
 	@Override
 	public void run() {
+		this.tiempoInicioVenta = System.currentTimeMillis();
         try {
             while (!Thread.currentThread().isInterrupted()) {
             	if (libroDeReservas.size() >= capacidadSala) {

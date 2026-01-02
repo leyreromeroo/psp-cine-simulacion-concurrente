@@ -9,11 +9,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AppTaquilla {
     // 3. Lista donde todas las taquillas guardarán las reservas exitosas (RC)
-    public static final List<Reserva> listaGlobal = Collections.synchronizedList(new ArrayList<>());
+    public static List<Reserva> listaGlobal = Collections.synchronizedList(new ArrayList<>());
     
     // IMPORTANTE: Sincronizamos esta lista porque el hilo generador escribe y el main lee
-    public static final List<Cliente> clientesTotales = Collections.synchronizedList(new ArrayList<>());
-    public static final AtomicInteger contadorReservas = new AtomicInteger(1);
+    public static List<Cliente> clientesTotales = Collections.synchronizedList(new ArrayList<>());
+    public static AtomicInteger contadorReservas = new AtomicInteger(1);
     
     public static final long TIEMPO_SIMULACION = 30000;
     public static final long INICIO_CINE = System.currentTimeMillis();

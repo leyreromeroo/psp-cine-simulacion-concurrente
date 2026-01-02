@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Sala {
 
-	private final int numeroSala;
-    private final List<Asiento> asientos;
+	private int numeroSala;
+    private List<Asiento> asientos;
 
     public Sala(int numeroSala, int capacidad) {
         this.numeroSala = numeroSala;

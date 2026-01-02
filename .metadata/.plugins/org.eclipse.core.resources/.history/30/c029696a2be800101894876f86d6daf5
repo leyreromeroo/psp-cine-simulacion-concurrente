@@ -8,7 +8,7 @@ public class Asiento {
 
     public Asiento(int numeroAsiento) {this.numeroAsiento = numeroAsiento;}
     
-    public final int getNumeroAsiento() {return numeroAsiento;}
+    public int getNumeroAsiento() {return numeroAsiento;}
 
     public synchronized boolean ocupar(Cliente cliente) {
         if (!reservado) {

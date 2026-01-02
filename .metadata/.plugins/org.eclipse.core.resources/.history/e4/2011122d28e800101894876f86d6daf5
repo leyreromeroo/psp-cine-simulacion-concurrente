@@ -5,24 +5,22 @@ import java.util.concurrent.BlockingQueue;
 
 public class Taquilla implements Runnable{
 	
-	private static final boolean debug = true;
-    private final int id;
-    private final List<BlockingQueue<Cliente>> colas;
-    private final Proyeccion proyeccion;
-    private final long tiempoMinVenta;
-    private final long tiempoMaxVenta;
-    private final int capacidadSala;
-    private final List<Reserva> libroDeReservas;
+	private static boolean debug = true;
+	private int id;
+    private List<BlockingQueue<Cliente>> colas;
+    private Proyeccion proyeccion;
+    private long tiempoInicioVenta;
+    private long tiempoMinVenta = 0;
+    private long tiempoMaxVenta = 0;
+    private List<Reserva> libroDeReservas;
 
-    public Taquilla(int id, List<BlockingQueue<Cliente>> colas, Proyeccion p, List<Reserva> libroDeReservas , long tiempoMinVenta,  long tiempoMaxVenta, 
-            int capacidadSala) {
+    public Taquilla(int id, List<BlockingQueue<Cliente>> colas, Proyeccion p, List<Reserva> libroDeReservas , long tiempoMinVenta,  long tiempoMaxVenta) {
         this.id = id;
         this.colas = colas;
         this.proyeccion = p;
         this.libroDeReservas = libroDeReservas;
         this.tiempoMinVenta = tiempoMinVenta;
         this.tiempoMaxVenta = tiempoMaxVenta;
-        this.capacidadSala = capacidadSala;
     }
     
 	//Por si en el futuro se quiere generar estadísticas de venta por taquilla
@@ -31,11 +29,11 @@ public class Taquilla implements Runnable{
 
 	@Override
 	public void run() {
+		this.tiempoInicioVenta = System.currentTimeMillis();
         try {
             while (!Thread.currentThread().isInterrupted()) {
-            	if (libroDeReservas.size() >= capacidadSala) {
+            	if (libroDeReservas.size() >= 200) {
             		Thread.currentThread().interrupt();
-            		System.out.println("VENTA FINALIZADA: Aforo completo.");
             		break;
             	}
                 Cliente cliente = null;
@@ -47,7 +45,7 @@ public class Taquilla implements Runnable{
 
                 if (cliente != null) {
                     // Simular tiempo de venta (20-30 seg)
-                    long espera = (long) (Math.random() * (tiempoMaxVenta - tiempoMinVenta) + tiempoMinVenta);
+                    long espera = (long) (Math.random() * (30000 - 20000) + 20000);
                     Thread.sleep(espera); 
 
                     Asiento libre = proyeccion.buscarAsientoLibre();

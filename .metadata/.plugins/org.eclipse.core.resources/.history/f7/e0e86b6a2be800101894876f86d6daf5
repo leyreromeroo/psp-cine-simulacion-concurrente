@@ -2,7 +2,7 @@ package com.leyreromero.psp.cine_simulacion_concurrente;
 
 public class Cliente {
 
-	private final String nombre;
+	private String nombre;
     private boolean tieneReserva = false;
 
     public Cliente(String nombre) {

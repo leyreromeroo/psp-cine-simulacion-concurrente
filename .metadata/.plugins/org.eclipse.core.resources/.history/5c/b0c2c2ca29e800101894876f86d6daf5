@@ -9,22 +9,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AppTaquilla {
     // 3. Lista donde todas las taquillas guardarán las reservas exitosas (RC)
-    public static final List<Reserva> listaGlobal = Collections.synchronizedList(new ArrayList<>());
+    public static List<Reserva> listaGlobal = Collections.synchronizedList(new ArrayList<>());
     
     // IMPORTANTE: Sincronizamos esta lista porque el hilo generador escribe y el main lee
-    public static final List<Cliente> clientesTotales = Collections.synchronizedList(new ArrayList<>());
-    public static final AtomicInteger contadorReservas = new AtomicInteger(1);
+    public static List<Cliente> clientesTotales = Collections.synchronizedList(new ArrayList<>());
+    public static AtomicInteger contadorReservas = new AtomicInteger(1);
     
     public static final long TIEMPO_SIMULACION = 30000;
     public static final long INICIO_CINE = System.currentTimeMillis();
     public static final long TIEMPO_MAX_VENTA = 30000;
     public static final long TIEMPO_MIN_VENTA = 20000;
-    public static final int CAPACIDAD_SALA = 200;
     
     public static void main(String[] args) {
         
         // 1. Configuración inicial
-        Sala sala = new Sala(1, CAPACIDAD_SALA);
+        Sala sala = new Sala(1, 200);
         Pelicula p = new Pelicula(1, "Interestellar", 8.50, 0, 7200000);
         Proyeccion proyeccion = new Proyeccion(101, sala, p, System.currentTimeMillis());
         
@@ -37,7 +36,7 @@ public class AppTaquilla {
         // 4. Lanzar Taquillas (Hilos)
         List<Thread> hilosTaquilla = new ArrayList<>();
         for(int i=0; i<2; i++) {
-            Thread t = new Thread(new Taquilla(i, colas, proyeccion, listaGlobal, TIEMPO_MIN_VENTA, TIEMPO_MAX_VENTA, CAPACIDAD_SALA));
+            Thread t = new Thread(new Taquilla(i, colas, proyeccion, listaGlobal, TIEMPO_MIN_VENTA, TIEMPO_MAX_VENTA));
             t.start();
             hilosTaquilla.add(t);
         }
