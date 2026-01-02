@@ -1,0 +1,31 @@
+package com.leyreromero.psp.cine_simulacion_concurrente;
+
+public class Proyeccion {
+
+	private final int id;
+    private final Sala sala;
+    private final Pelicula pelicula;
+    private final long horaInicio;
+
+    public Proyeccion(int id, Sala sala, Pelicula pelicula, long hora) {
+        this.id = id;
+        this.sala = sala;
+        this.pelicula = pelicula;
+        this.horaInicio = hora;
+    }
+    
+    public Pelicula getPelicula() { return pelicula; }
+    public Sala getSala() { return sala; }
+    public long getHoraInicio() { return horaInicio; }
+    public int getId() { return id; }
+
+	// Método para buscar el primer asiento libre de forma segura
+    public Asiento buscarAsientoLibre() {
+        for (Asiento a : sala.getAsientos()) {
+            if (!a.isReservado()) return a; // Intento rápido
+        }
+        return null;
+    }
+
+
+}
