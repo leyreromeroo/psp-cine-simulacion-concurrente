@@ -15,6 +15,6 @@ public class Sala {
             asientos.add(new Asiento(i));
         }
     }
-    public int getNumeroSala() { return numeroSala;}
+
     public List<Asiento> getAsientos() { return asientos; }
 }

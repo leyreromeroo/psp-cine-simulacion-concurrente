@@ -14,10 +14,31 @@ public class Proyeccion {
         this.horaInicio = hora;
     }
     
-    public Pelicula getPelicula() { return pelicula; }
-    public Sala getSala() { return sala; }
-    public long getHoraInicio() { return horaInicio; }
-    public int getId() { return id; }
+    
+    public Pelicula getPelicula() {
+		return pelicula;
+	}
+
+
+	public Sala getSala() {
+		return sala;
+	}
+
+
+	public void setSala(Sala sala) {
+		this.sala = sala;
+	}
+
+
+	public long getHoraInicio() {
+		return horaInicio;
+	}
+
+
+	public void setHoraInicio(long horaInicio) {
+		this.horaInicio = horaInicio;
+	}
+
 
 	// Método para buscar el primer asiento libre de forma segura
     public Asiento buscarAsientoLibre() {

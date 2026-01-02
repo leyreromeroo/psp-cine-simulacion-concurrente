@@ -18,11 +18,7 @@ public class Taquilla implements Runnable{
         this.proyeccion = p;
         this.libroDeReservas = libroDeReservas;
     }
-    
-	//Por si en el futuro se quiere generar estadísticas de venta por taquilla
-	public int getId() {return id;}
-
-
+	
 	@Override
 	public void run() {
 		this.tiempoInicioVenta = System.currentTimeMillis();
@@ -43,11 +39,7 @@ public class Taquilla implements Runnable{
                     Asiento libre = proyeccion.buscarAsientoLibre();
                     if (libre != null && libre.ocupar(cliente)) {
                         cliente.setReservaExitosa(true);
-                        
-                     // Obtenemos el ID y sumamos 1 en un solo paso atómico
-                        int idReservaUnico = AppTaquilla.contadorReservas.getAndIncrement();
-                        
-                        Reserva nuevaReserva = new Reserva(idReservaUnico, cliente, proyeccion, libre.getNumeroAsiento());
+                        Reserva nuevaReserva = new Reserva(libroDeReservas.size() + 1, cliente, proyeccion, libre.getNumeroAsiento());
                         libroDeReservas.add(nuevaReserva); 
                         logConTimestamp("Venta completada para: " + cliente.getNombre());
                     }

@@ -14,9 +14,24 @@ public class Pelicula {
         this.duracionMs = fin - inicio;
     }
 
-	public int getId() {return id;}
-	public double getPrecioBase() {return precioBase;}
-	public String getTitulo() {return titulo;}
-	public long getDuracionMs() {return duracionMs;}
+	public int getId() {
+		return id;
+	}
+
+	public double getPrecioBase() {
+		return precioBase;
+	}
+
+	public void setPrecioBase(double precioBase) {
+		this.precioBase = precioBase;
+	}
+
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public long getDuracionMs() {
+		return duracionMs;
+	}
     
 }

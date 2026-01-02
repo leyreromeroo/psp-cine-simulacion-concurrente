@@ -5,80 +5,141 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AppTaquilla {
     // 3. Lista donde todas las taquillas guardarán las reservas exitosas (RC)
-	public static List<Reserva> listaGlobal = Collections.synchronizedList(new ArrayList<>());
-	public static List<Cliente> clientesTotales = new ArrayList<>();
+    public static List<Reserva> listaGlobal = Collections.synchronizedList(new ArrayList<>());
+    
+    // IMPORTANTE: Sincronizamos esta lista porque el hilo generador escribe y el main lee
+    public static List<Cliente> clientesTotales = Collections.synchronizedList(new ArrayList<>());
+    public static AtomicInteger contadorReservas = new AtomicInteger(1);
+    
     public static final long INICIO_CINE = System.currentTimeMillis();
-	
+    
     public static void main(String[] args) {
-    	
-    	// 1. Configuración inicial
+        
+        // 1. Configuración inicial
         Sala sala = new Sala(1, 200);
-        Proyeccion p = new Proyeccion(101, sala, new Pelicula(1, "Interestellar",8.50, 0, 7200000), System.currentTimeMillis());
+        Pelicula p = new Pelicula(1, "Interestellar", 8.50, 0, 7200000);
+        Proyeccion proyeccion = new Proyeccion(101, sala, p, System.currentTimeMillis());
         
         // 2. Crear 4 colas de capacidad 10
         List<BlockingQueue<Cliente>> colas = new ArrayList<>();
-        for(int i=0; i<4; i++) colas.add(new ArrayBlockingQueue<>(10));
+        for(int i=0; i<4; i++) {
+            colas.add(new ArrayBlockingQueue<>(10));
+        }
         
         // 4. Lanzar Taquillas (Hilos)
         List<Thread> hilosTaquilla = new ArrayList<>();
-
         for(int i=0; i<2; i++) {
-            Thread t = new Thread(new Taquilla(i, colas, p, listaGlobal));
+            Thread t = new Thread(new Taquilla(i, colas, proyeccion, listaGlobal));
             t.start();
             hilosTaquilla.add(t);
         }
 
-        // 4. Hilo Generador de Clientes (Lambda para simplificar)
+        // 5. Hilo Generador de Clientes
         Thread generador = new Thread(() -> {
             try {
-                while(true) {
-                    Cliente c = new Cliente("Anonimo");
+                int contador = 1;
+                while(!Thread.currentThread().isInterrupted()) {
+                    Cliente c = new Cliente("Cliente-" + contador++);
+                    
+                    // Registramos al cliente en la lista global para las estadísticas
+                    clientesTotales.add(c);
+                    
                     // Intentar meter en cualquier cola libre
                     boolean metido = false;
                     for(BlockingQueue<Cliente> q : colas) {
-                        if(q.offer(c)) { metido = true; break; }
+                        if(q.offer(c)) { 
+                            metido = true; 
+                            break; 
+                        }
                     }
+                    
+                    if (!metido) {
+                        System.err.println("[Generador] Todas las colas llenas. Cliente se marcha.");
+                    }
+                    
                     Thread.sleep(4000); // 15 clientes/min aprox.
                 }
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+                // Señal de parada recibida
+            }
         });
         generador.start();
-        
-        
+
+        // 6. CONTROL DE TIEMPO Y FINALIZACIÓN
+        try {
+            // Simulamos 30 segundos de venta abierta
+            Thread.sleep(30000);
+            
+            System.out.println("\n>>> !!! CIERRE DE TAQUILLAS !!! <<<");
+            
+            // Interrumpimos hilos (Señal de PSP)
+            generador.interrupt();
+            for (Thread t : hilosTaquilla) {
+                t.interrupt();
+            }
+
+            // Esperamos a que las taquillas terminen (JOIN)
+            for (Thread t : hilosTaquilla) {
+                t.join();
+            }
+
+            // 7. MOSTRAR RESULTADOS
+            System.out.println(generarEstadisticas());
+
+        } catch (InterruptedException e) {
+            System.err.println("Error en la ejecución principal: " + e.getMessage());
+        }
     }
     
+    /**
+     * Genera el informe final usando StringBuilder para eficiencia de memoria
+     */
     public static String generarEstadisticas() {
         int exitos = 0;
         int fallos = 0;
+        double recaudacionTotal = 0;
         StringBuilder sb = new StringBuilder();
         
-        sb.append("\n--- ESTADÍSTICAS DE VENTA ---\n");
+        sb.append("\n============================================");
+        sb.append("\n         ESTADÍSTICAS DE VENTA              ");
+        sb.append("\n============================================\n");
         
-        for (Cliente c : clientesTotales) {
-            if (c.hasReserva()) {
-                exitos++;
-            } else {
-                fallos++;
+        // Recorremos la lista sincronizada de forma segura
+        synchronized (clientesTotales) {
+            for (Cliente c : clientesTotales) {
+                if (c.hasReserva()) {
+                    exitos++;
+                } else {
+                    fallos++;
+                }
             }
         }
         
-        sb.append("Clientes con entrada: ").append(exitos).append("\n");
-        sb.append("Clientes sin entrada (cola llena o agotado): ").append(fallos).append("\n");
-        double recaudacionTotal = 0;
-        for (Reserva r : listaGlobal) {
-            recaudacionTotal += r.getPrecioFinal();
+        // Calculamos recaudación desde la lista de reservas
+        synchronized (listaGlobal) {
+            for (Reserva r : listaGlobal) {
+                recaudacionTotal += r.getPrecioFinal();
+            }
         }
-        sb.append("Total facturado: ").append(recaudacionTotal).append("€\n");
+        
+        sb.append("Clientes totales que llegaron: ").append(clientesTotales.size()).append("\n");
+        sb.append("Entradas vendidas: ").append(exitos).append("\n");
+        sb.append("Clientes sin entrada: ").append(fallos).append("\n");
+        sb.append("Total facturado: ").append(String.format("%.2f", recaudacionTotal)).append("€\n");
+        sb.append("--------------------------------------------\n");
         sb.append("Detalle de Reservas:\n");
         
-        for (Reserva r : listaGlobal) {
-            sb.append("\t").append(r.toString()).append("\n");
+        synchronized (listaGlobal) {
+            for (Reserva r : listaGlobal) {
+                sb.append("\t").append(r.toString()).append("\n");
+            }
         }
+        sb.append("============================================\n");
         
         return sb.toString();
     }
-    
 }

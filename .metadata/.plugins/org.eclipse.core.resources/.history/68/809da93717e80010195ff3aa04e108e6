@@ -1,8 +1,5 @@
 package com.leyreromero.psp.cine_simulacion_concurrente;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class Reserva {
 
 	private int id;
@@ -30,15 +27,8 @@ public class Reserva {
 
 	@Override
 	public String toString() {
-		// 1. Creamos el formato que nos guste
-	    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-	    
-	    // 2. Convertimos los milisegundos a un objeto Date
-	    String horaLegible = sdf.format(new Date(this.timestamp));
-	    
-		return "Ticket #" + id + " | Cliente: " + cliente.getNombre() + " | Pelicula:"+proyeccion.getPelicula().getTitulo()+
-				" | Asiento: " + numeroAsiento + " | Hora: " + horaLegible +
-				" | Precio: " + String.format("%.2f", precioFinal) + "€";
+		return "Ticket #" + id + " | Cliente: " + cliente.getNombre() + 
+				" | Asiento: " + numeroAsiento + " | Hora: " + timestamp;
 	}
 
 }

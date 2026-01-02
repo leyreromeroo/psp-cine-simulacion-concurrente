@@ -6,9 +6,15 @@ public class Asiento {
     private Cliente cliente;
     private boolean reservado = false;
 
-    public Asiento(int numeroAsiento) {this.numeroAsiento = numeroAsiento;}
-    
-    public int getNumeroAsiento() {return numeroAsiento;}
+    public Asiento(int numeroAsiento) {
+        this.numeroAsiento = numeroAsiento;
+    }
+
+    public int getNumeroAsiento() {
+		return numeroAsiento;
+	}
+
+
 
 	// El método de reserva lo movemos a la Sala para mejor control
     public synchronized boolean ocupar(Cliente cliente) {

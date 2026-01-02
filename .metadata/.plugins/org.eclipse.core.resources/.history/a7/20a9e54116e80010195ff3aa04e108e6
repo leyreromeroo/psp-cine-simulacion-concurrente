@@ -1,0 +1,29 @@
+package com.leyreromero.psp.cine_simulacion_concurrente;
+
+public class Reserva {
+
+	private int id;
+	private Cliente cliente;
+	private Proyeccion proyeccion;
+	private int numeroAsiento;
+	private double precioFinal;
+	private long timestamp;
+
+	public Reserva(int id, Cliente cliente, Proyeccion proyeccion, int numeroAsiento) {
+		this.id = id;
+		this.cliente = cliente;
+		this.proyeccion = proyeccion;
+		this.numeroAsiento = numeroAsiento;
+		this.timestamp = System.currentTimeMillis();
+		this.precioFinal = proyeccion.getPelicula().getPrecioBase();
+	}
+	
+	public double getPrecioFinal() { return precioFinal; }
+
+	@Override
+	public String toString() {
+		return "Ticket #" + id + " | Cliente: " + cliente.getNombre() + 
+				" | Asiento: " + numeroAsiento + " | Hora: " + timestamp;
+	}
+
+}
