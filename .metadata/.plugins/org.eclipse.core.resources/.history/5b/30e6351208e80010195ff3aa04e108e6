@@ -1,0 +1,47 @@
+package com.leyreromero.psp.cine_simulacion_concurrente;
+
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+
+public class Taquilla implements Runnable{
+	
+	private int id;
+    private List<BlockingQueue<Cliente>> colas;
+    private Proyeccion proyeccion;
+    private long tiempoInicioVenta;
+
+    public Taquilla(int id, List<BlockingQueue<Cliente>> colas, Proyeccion p) {
+        this.id = id;
+        this.colas = colas;
+        this.proyeccion = p;
+    }
+	
+	@Override
+	public void run() {
+		this.tiempoInicioVenta = System.currentTimeMillis();
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                Cliente cliente = null;
+                // V2: Elegir una cola que tenga gente
+                for (BlockingQueue<Cliente> cola : colas) {
+                    cliente = cola.poll(); // No bloqueante para poder rotar colas
+                    if (cliente != null) break;
+                }
+
+                if (cliente != null) {
+                    // Simular tiempo de venta (20-30 seg)
+                    long espera = (long) (Math.random() * (30000 - 20000) + 20000);
+                    Thread.sleep(espera); 
+
+                    Asiento libre = proyeccion.buscarAsientoLibre();
+                    if (libre != null && libre.ocupar(cliente)) {
+                        cliente.setReservaExitosa(true);
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            // Fin de la jornada de venta
+        }
+    }
+
+}

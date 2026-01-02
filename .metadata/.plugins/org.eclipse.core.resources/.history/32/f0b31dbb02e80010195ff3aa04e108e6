@@ -1,0 +1,5 @@
+package com.leyreromero.psp.cine_simulacion_concurrente;
+
+public class Asiento {
+
+}

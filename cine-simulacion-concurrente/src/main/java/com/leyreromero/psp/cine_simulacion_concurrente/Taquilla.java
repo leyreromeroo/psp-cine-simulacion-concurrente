@@ -1,0 +1,64 @@
+package com.leyreromero.psp.cine_simulacion_concurrente;
+
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+
+public class Taquilla implements Runnable{
+	
+	private static boolean debug = true;
+	private int id;
+    private List<BlockingQueue<Cliente>> colas;
+    private Proyeccion proyeccion;
+    private long tiempoInicioVenta;
+    private List<Reserva> libroDeReservas;
+
+    public Taquilla(int id, List<BlockingQueue<Cliente>> colas, Proyeccion p, List<Reserva> libroDeReservas) {
+        this.id = id;
+        this.colas = colas;
+        this.proyeccion = p;
+        this.libroDeReservas = libroDeReservas;
+    }
+	
+	@Override
+	public void run() {
+		this.tiempoInicioVenta = System.currentTimeMillis();
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                Cliente cliente = null;
+                // Elegir una cola que tenga gente
+                for (BlockingQueue<Cliente> cola : colas) {
+                    cliente = cola.poll(); // No bloqueante para poder rotar colas
+                    if (cliente != null) break;
+                }
+
+                if (cliente != null) {
+                    // Simular tiempo de venta (20-30 seg)
+                    long espera = (long) (Math.random() * (30000 - 20000) + 20000);
+                    Thread.sleep(espera); 
+
+                    Asiento libre = proyeccion.buscarAsientoLibre();
+                    if (libre != null && libre.ocupar(cliente)) {
+                        cliente.setReservaExitosa(true);
+                        Reserva nuevaReserva = new Reserva(libroDeReservas.size() + 1, cliente, proyeccion, libre.getNumeroAsiento());
+                        libroDeReservas.add(nuevaReserva); 
+                        logConTimestamp("Venta completada para: " + cliente.getNombre());
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            // Fin de la jornada de venta
+        }
+    }
+	
+	/**
+	 * Escribe el log junto con los ms desde el comienzo de la simulación
+	 * @param mensaje
+	 */
+	private void logConTimestamp(String mensaje) {
+        if (debug) {
+            long timestamp = System.currentTimeMillis() - AppTaquilla.INICIO_CINE;
+            System.out.println("[" + Thread.currentThread().getId() + "][Taquilla-" + id + "]; T+" + timestamp + "ms: " + mensaje);
+        }
+    }
+
+}

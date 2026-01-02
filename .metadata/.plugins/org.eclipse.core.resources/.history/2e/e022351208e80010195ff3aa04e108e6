@@ -1,0 +1,43 @@
+package com.leyreromero.psp.cine_simulacion_concurrente;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+public class AppTaquilla {
+    public static void main(String[] args) {
+    	// 1. Configuración inicial
+        Sala sala = new Sala(1, 200);
+        Proyeccion p = new Proyeccion(101, sala, new Pelicula(1, "Interestellar", 0, 7200000), System.currentTimeMillis());
+        
+        // 2. Crear 4 colas de capacidad 10
+        List<BlockingQueue<Cliente>> colas = new ArrayList<>();
+        for(int i=0; i<4; i++) colas.add(new ArrayBlockingQueue<>(10));
+
+        // 3. Lanzar Taquillas (Hilos)
+        List<Thread> hilosTaquilla = new ArrayList<>();
+        for(int i=0; i<2; i++) {
+            Thread t = new Thread(new Taquilla(i, colas, p));
+            t.start();
+            hilosTaquilla.add(t);
+        }
+
+        // 4. Hilo Generador de Clientes (Lambda para simplificar)
+        Thread generador = new Thread(() -> {
+            try {
+                while(true) {
+                    Cliente c = new Cliente("Anonimo");
+                    // Intentar meter en cualquier cola libre
+                    boolean metido = false;
+                    for(BlockingQueue<Cliente> q : colas) {
+                        if(q.offer(c)) { metido = true; break; }
+                    }
+                    Thread.sleep(4000); // 15 clientes/min aprox.
+                }
+            } catch (InterruptedException e) {}
+        });
+        generador.start();
+    }
+    
+}

@@ -1,0 +1,10 @@
+package com.leyreromero.psp.cine_simulacion_concurrente;
+
+/**
+ * Hello world!
+ */
+public class AppTaquilla {
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+}

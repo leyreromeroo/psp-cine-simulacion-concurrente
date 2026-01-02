@@ -1,0 +1,27 @@
+package com.leyreromero.psp.cine_simulacion_concurrente;
+
+public class Pelicula {
+
+	private int id;
+    private String titulo;
+    private long duracionMs; 
+
+    public Pelicula(int id, String titulo, long inicio, long fin) {
+        this.id = id;
+        this.titulo = titulo;
+        this.duracionMs = fin - inicio;
+    }
+
+	public int getId() {
+		return id;
+	}
+
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public long getDuracionMs() {
+		return duracionMs;
+	}
+    
+}

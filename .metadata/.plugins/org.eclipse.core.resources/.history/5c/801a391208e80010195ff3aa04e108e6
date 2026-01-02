@@ -1,0 +1,30 @@
+package com.leyreromero.psp.cine_simulacion_concurrente;
+
+public class Asiento {
+	
+	private final int numeroAsiento;
+    private Cliente cliente;
+    private boolean reservado = false;
+
+    public Asiento(int numeroAsiento) {
+        this.numeroAsiento = numeroAsiento;
+    }
+
+    // El método de reserva lo movemos a la Sala para mejor control
+    public synchronized boolean ocupar(Cliente cliente) {
+        if (!reservado) {
+            this.cliente = cliente;
+            this.reservado = true;
+            return true;
+        }
+        return false;
+    }
+
+	public boolean isReservado() {
+		if (reservado) {
+			return true;
+		}
+		return false;
+		
+	}
+}
