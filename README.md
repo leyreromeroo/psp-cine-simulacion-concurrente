@@ -25,6 +25,6 @@ Al finalizar la simulación, el programa genera un informe con:
 2.  **Clientes rechazados:** Cuántos se quedaron fuera por falta de aforo.
 3.  **Tiempo de operación:** Duración total del proceso de venta.
 
-## 🛠️ Tecnologías utilizadas
+##  Tecnologías utilizadas
 * **Lenguaje:** Java 17+
 * **Conceptos:** Threads (Hilos), `synchronized`, `Locks`, y gestión de colas bloqueantes.
