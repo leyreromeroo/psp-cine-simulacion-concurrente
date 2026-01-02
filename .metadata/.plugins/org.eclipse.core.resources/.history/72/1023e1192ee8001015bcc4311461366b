@@ -15,16 +15,11 @@ public class AppTaquilla {
     public static final List<Cliente> clientesTotales = Collections.synchronizedList(new ArrayList<>());
     public static final AtomicInteger contadorReservas = new AtomicInteger(1);
     
-    //Parámetros Configurables
     public static final long TIEMPO_SIMULACION = 30000;
     public static final long INICIO_CINE = System.currentTimeMillis();
     public static final long TIEMPO_MAX_VENTA = 30000;
     public static final long TIEMPO_MIN_VENTA = 20000;
     public static final int CAPACIDAD_SALA = 200;
-    public static final int NUM_TAQUILLAS = 2;
-    public static final int NUM_COLAS = 4;
-    public static final int CAPACIDAD_COLA = 10;
-    public static final long TASA_LLEGADA_MS = 4000; // Tasa de creación de compradores
     
     public static void main(String[] args) {
         
@@ -35,13 +30,13 @@ public class AppTaquilla {
         
         // 2. Crear 4 colas de capacidad 10
         List<BlockingQueue<Cliente>> colas = new ArrayList<>();
-        for(int i=0; i<NUM_COLAS; i++) {
-            colas.add(new ArrayBlockingQueue<>(CAPACIDAD_COLA));
+        for(int i=0; i<4; i++) {
+            colas.add(new ArrayBlockingQueue<>(10));
         }
         
         // 4. Lanzar Taquillas (Hilos)
         List<Thread> hilosTaquilla = new ArrayList<>();
-        for(int i=0; i<NUM_TAQUILLAS; i++) {
+        for(int i=0; i<2; i++) {
             Thread t = new Thread(new Taquilla(i, colas, proyeccion, listaGlobal, TIEMPO_MIN_VENTA, TIEMPO_MAX_VENTA, CAPACIDAD_SALA));
             t.start();
             hilosTaquilla.add(t);
@@ -70,7 +65,7 @@ public class AppTaquilla {
                         System.err.println("[Generador] Todas las colas llenas. Cliente se marcha.");
                     }
                     
-                    Thread.sleep(TASA_LLEGADA_MS); // 15 clientes/min aprox.
+                    Thread.sleep(4000); // 15 clientes/min aprox.
                 }
             } catch (InterruptedException e) {
                 // Señal de parada recibida
@@ -85,7 +80,7 @@ public class AppTaquilla {
             
             System.out.println("\n>>> !!! CIERRE DE TAQUILLAS !!! <<<");
             
-            // Interrumpimos hilos 
+            // Interrumpimos hilos (Señal de PSP)
             generador.interrupt();
             for (Thread t : hilosTaquilla) {
                 t.interrupt();
