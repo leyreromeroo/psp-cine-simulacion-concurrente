@@ -10,11 +10,11 @@ public class Taquilla implements Runnable{
     private List<BlockingQueue<Cliente>> colas;
     private Proyeccion proyeccion;
     private long tiempoInicioVenta;
-    private long tiempoMinVenta = 0;
-    private long tiempoMaxVenta = 0;
+    private final long tiempoMinVenta; // Parametrizado
+    private final long tiempoMaxVenta;
     private List<Reserva> libroDeReservas;
 
-    public Taquilla(int id, List<BlockingQueue<Cliente>> colas, Proyeccion p, List<Reserva> libroDeReservas , long tiempoMinVenta,  long tiempoMaxVenta) {
+    public Taquilla(int id, List<BlockingQueue<Cliente>> colas, Proyeccion p, List<Reserva> libroDeReservas, long minVenta, long maxVenta) {
         this.id = id;
         this.colas = colas;
         this.proyeccion = p;
@@ -32,10 +32,6 @@ public class Taquilla implements Runnable{
 		this.tiempoInicioVenta = System.currentTimeMillis();
         try {
             while (!Thread.currentThread().isInterrupted()) {
-            	if (libroDeReservas.size() >= 200) {
-            		Thread.currentThread().interrupt();
-            		break;
-            	}
                 Cliente cliente = null;
                 // Elegir una cola que tenga gente
                 for (BlockingQueue<Cliente> cola : colas) {

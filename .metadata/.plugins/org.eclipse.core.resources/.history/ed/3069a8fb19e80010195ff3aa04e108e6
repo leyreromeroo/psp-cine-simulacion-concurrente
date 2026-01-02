@@ -10,6 +10,7 @@ public class Asiento {
     
     public int getNumeroAsiento() {return numeroAsiento;}
 
+	// El método de reserva lo movemos a la Sala para mejor control
     public synchronized boolean ocupar(Cliente cliente) {
         if (!reservado) {
             this.cliente = cliente;

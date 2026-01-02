@@ -15,7 +15,6 @@ public class AppTaquilla {
     public static List<Cliente> clientesTotales = Collections.synchronizedList(new ArrayList<>());
     public static AtomicInteger contadorReservas = new AtomicInteger(1);
     
-    public static final long TIEMPO_SIMULACION = 30000;
     public static final long INICIO_CINE = System.currentTimeMillis();
     public static final long TIEMPO_MAX_VENTA = 30000;
     public static final long TIEMPO_MIN_VENTA = 20000;
@@ -75,7 +74,7 @@ public class AppTaquilla {
         // 6. CONTROL DE TIEMPO Y FINALIZACIÓN
         try {
             // Simulamos 30 segundos de venta abierta
-            Thread.sleep(TIEMPO_SIMULACION);
+            Thread.sleep(30000);
             
             System.out.println("\n>>> !!! CIERRE DE TAQUILLAS !!! <<<");
             
@@ -127,18 +126,6 @@ public class AppTaquilla {
             for (Reserva r : listaGlobal) {
                 recaudacionTotal += r.getPrecioFinal();
             }
-        }
-        
-     // LÓGICA DE TIEMPO TOTAL DE VENTA
-        if (!listaGlobal.isEmpty()) {
-            // Obtenemos el timestamp de la última reserva realizada
-            long ultimaVenta = listaGlobal.get(listaGlobal.size() - 1).getTimestamp();
-            long tiempoTotalMs = ultimaVenta - INICIO_CINE;
-            
-            sb.append("Tiempo total de actividad de venta: ")
-              .append(tiempoTotalMs / 1000).append(" segundos.\n");
-        } else {
-            sb.append("Tiempo total de actividad de venta: 0 segundos (no hubo ventas).\n");
         }
         
         sb.append("Clientes totales que llegaron: ").append(clientesTotales.size()).append("\n");
