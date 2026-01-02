@@ -9,7 +9,6 @@ public class Asiento {
     public Asiento(int numeroAsiento) {this.numeroAsiento = numeroAsiento;}
     
     public final int getNumeroAsiento() {return numeroAsiento;}
-    public Cliente getCliente() {return cliente;}
 
     public synchronized boolean ocupar(Cliente cliente) {
         if (!reservado) {
@@ -20,7 +19,11 @@ public class Asiento {
         return false;
     }
 
-    public boolean isReservado() {
-        return reservado;
-    }
+	public boolean isReservado() {
+		if (reservado) {
+			return true;
+		}
+		return false;
+		
+	}
 }
